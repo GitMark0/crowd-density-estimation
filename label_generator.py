@@ -95,8 +95,9 @@ def main():
     part_A_test = os.path.join(root,'part_A_final/test_data','images')
     part_B_train = os.path.join(root,'part_B_final/train_data','images')
     part_B_test = os.path.join(root,'part_B_final/test_data','images')
-    path_sets = [(part_A_train, 10), (part_A_test, 50)]
-    #path_sets = [(part_B_train, 1000), (part_B_test, 500)]
+
+    #path_sets = [(part_A_train, 300), (part_A_test, 182)]
+    path_sets = [(part_B_train, 400), (part_B_test, 316)]
 
     for set, N in path_sets:
         labels = []
