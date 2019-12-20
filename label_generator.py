@@ -15,7 +15,7 @@ root = 'ShanghaiTech_Crowd_Counting_Dataset/'
 def get_paths(set, N):
 
     img_paths = []
-    for i in range(1, N):
+    for i in range(1, N+1):
         img_paths.append(os.path.join(set, 'IMG_'+str(i)+'.jpg'))
     return img_paths
 
@@ -78,16 +78,46 @@ def generate_label(count):
     else:
         return 2
 
+def save(name, data):
+    with open(name, 'w+') as file:
+        for i, row in enumerate(data):
+            d = str(row) if i+1 == len(data) else str(row) + '\n'
+            file.write(d)
+
 def save_labels(set, labels):
-    with open(set + 'labels.txt', 'w+') as file:
-        for label in labels:
-            file.write(str(label) + '\n')
+    save(set + '/labels.txt', labels)
+
+
+def save_counts(set, counts):
+    save(set + '/counts.txt', counts)
+
+def load_counts(set):
+    with open(set + '/counts.txt', 'r+') as file:
+        return [float(c) for c in file.read().split('\n')]
 
 def class_ratios(labels):
     counts = [0, 0, 0]
     for label in labels:
         counts[label] += 1
     return [c/len(labels) for c in counts]
+
+def count(path_sets):
+
+    for set, N in path_sets:
+        counts = []
+        for path in get_paths(set, N):
+            counts.append(get_count(path))
+        print(counts)
+        save_counts(set, counts)
+
+def label(path_sets):
+    for set, _ in path_sets:
+        labels = []
+        for count in load_counts(set):
+            labels.append(generate_label(count))
+        print(class_ratios(labels))
+        save_labels(set, labels)
+
 
 def main():
 
@@ -96,15 +126,11 @@ def main():
     part_B_train = os.path.join(root,'part_B_final/train_data','images')
     part_B_test = os.path.join(root,'part_B_final/test_data','images')
 
-    #path_sets = [(part_A_train, 300), (part_A_test, 182)]
+    path_sets = [(part_A_train, 300), (part_A_test, 182)]
     path_sets = [(part_B_train, 400), (part_B_test, 316)]
 
-    for set, N in path_sets:
-        labels = []
-        for path in get_paths(set, N):
-            labels.append(generate_label(get_count(path)))
-        save_labels(set, labels)
-        print(class_ratios(labels))
+    count(path_sets)
+    label(path_sets)
 
 
 if __name__ == '__main__':
