@@ -10,7 +10,7 @@ import scipy
 from matplotlib import cm as CM
 import scipy.spatial
 
-root = 'ShanghaiTech_Crowd_Counting_Dataset/'
+root = 'ShanghaiTech_Crowd_Counting_Dataset'
 
 def get_paths(set, N):
 
@@ -79,21 +79,27 @@ def generate_label(count):
         return 2
 
 def save(name, data):
-    with open(name, 'w+') as file:
-        for i, row in enumerate(data):
-            d = str(row) if i+1 == len(data) else str(row) + '\n'
-            file.write(d)
+    with open(name, 'a+') as file:
+        #for i, row in enumerate(data):
+        #    d = str(row) if i+1 == len(data) else str(row) + '\n'
+        #    file.write(d)
+        file.write(str(data) + '\n')
 
 def save_labels(set, labels):
-    save(set + '/labels.txt', labels)
+    save(os.path.join(set,'labels.txt'), labels)
 
 
 def save_counts(set, counts):
-    save(set + '/counts.txt', counts)
+    save(os.path.join(set,'counts.txt'), counts)
 
 def load_counts(set):
-    with open(set + '/counts.txt', 'r+') as file:
-        return [float(c) for c in file.read().split('\n')]
+    with open(os.path.join(set,'counts.txt'), 'r+') as file:
+        res = []
+        for c in file.read().split('\n'):
+            if not c:
+                continue
+            res.append(float(c))
+        return res
 
 def class_ratios(labels):
     counts = [0, 0, 0]
@@ -102,13 +108,27 @@ def class_ratios(labels):
     return [c/len(labels) for c in counts]
 
 def count(path_sets):
-
     for set, N in path_sets:
-        counts = []
-        for path in get_paths(set, N):
-            counts.append(get_count(path))
-        print(counts)
-        save_counts(set, counts)
+        try:
+            # if there is already estimation for path set
+            num_lines = sum(1 for line in open(os.path.join(set,'counts.txt'), 'r+'))
+            if(num_lines == N):
+                continue
+            else:
+                current = 0
+                for path in get_paths(set, N):
+                    current += 1
+                    if current <= num_lines:
+                        continue
+                    c = get_count(path)
+                    print(c)
+                    save_counts(set, c)
+        except:
+            # if there is no estimation for path set
+            for path in get_paths(set, N):
+                c = get_count(path)
+                print(c)
+                save_counts(set, c)
 
 def label(path_sets):
     for set, _ in path_sets:
@@ -121,10 +141,10 @@ def label(path_sets):
 
 def main():
 
-    part_A_train = os.path.join(root,'part_A_final/train_data','images')
-    part_A_test = os.path.join(root,'part_A_final/test_data','images')
-    part_B_train = os.path.join(root,'part_B_final/train_data','images')
-    part_B_test = os.path.join(root,'part_B_final/test_data','images')
+    part_A_train = os.path.join(root,'part_A_final','train_data','images')
+    part_A_test = os.path.join(root,'part_A_final','test_data','images')
+    part_B_train = os.path.join(root,'part_B_final','train_data','images')
+    part_B_test = os.path.join(root,'part_B_final','test_data','images')
 
     path_sets = [(part_A_train, 300), (part_A_test, 182)]
     path_sets = [(part_B_train, 400), (part_B_test, 316)]
