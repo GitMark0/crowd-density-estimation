@@ -1,0 +1,9 @@
+1. Skinuti prethodno natrenirane tezine nad svim slikama iz shanghai dataseta s:
+https://drive.google.com/file/d/1KY11yLorynba14Sg7whFOfVeh2ja02wm/view
+
+2. Spremi ih u CSRNet_pytorch
+
+3. U 24. retku u test.py stavi lokaciju proizvoljne slike
+
+4. pokreni test.py i jos jednom hvala majci Indiji 
+https://www.analyticsvidhya.com/blog/2019/02/building-crowd-counting-model-python/
