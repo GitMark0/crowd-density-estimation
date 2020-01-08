@@ -80,10 +80,10 @@ def generate_label(count):
 
 def save(name, data):
     with open(name, 'a+') as file:
-        #for i, row in enumerate(data):
-        #    d = str(row) if i+1 == len(data) else str(row) + '\n'
-        #    file.write(d)
-        file.write(str(data) + '\n')
+        for i, row in enumerate(data):
+            d = str(row) if i+1 == len(data) else str(row) + '\n'
+            file.write(d)
+        #file.write(str(data) + '\n')
 
 def save_labels(set, labels):
     save(os.path.join(set,'labels.txt'), labels)
@@ -149,7 +149,7 @@ def main():
     path_sets = [(part_A_train, 300), (part_A_test, 182)]
     path_sets = [(part_B_train, 400), (part_B_test, 316)]
 
-    count(path_sets)
+    #count(path_sets)
     label(path_sets)
 
 
