@@ -24,8 +24,9 @@ def init_model():
 
 
 def main():
-    part_B_train = os.path.join(root,'part_B_final','train_data','images')
-    part_B_test = os.path.join(root,'part_B_final','test_data','images')
+    folder = 'processed'
+    part_B_train = os.path.join(root,'part_B_final','train_data',folder)
+    part_B_test = os.path.join(root,'part_B_final','test_data',folder)
     path_sets = [(part_B_train, 1), (part_B_test, 1)]
 
     X_train, y_train = data_util.load_data(path_sets[0][0], path_sets[0][1])

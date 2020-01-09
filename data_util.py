@@ -3,7 +3,7 @@ import numpy as np
 import os
 
 
-def get_pixels(name, path, avg = True, norm = True):
+def get_pixels(name, path, avg=True, norm=True):
     pix = np.array(Image.open(os.path.join(path, name), 'r'))
     if avg:
         pix = avg_pool(pix)
@@ -11,7 +11,7 @@ def get_pixels(name, path, avg = True, norm = True):
         pix = normalize(pix)
     return pix
 
-def avg_pool(pix, cluster = 5, stride = 4):
+def avg_pool(pix, cluster=6, stride=6):
     input_shape = pix.shape
     output_shape = (int((input_shape[0] - cluster)/stride) + 1,\
                 int((input_shape[1] - cluster)/stride) + 1)
@@ -77,7 +77,7 @@ def load_data(path, N):
 
 def process_save(load_path, N, save_path):
     for i in range(1, N+1):
-        img = load_image(load_path, i)
+        img = chw_hwc(load_image(load_path, i))
         name = 'IMG_' +  str(i) + '.jpg'
         image_from_arr(img).save(os.path.join(save_path, name))
 
