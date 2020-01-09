@@ -1,14 +1,14 @@
 import h5py
 import scipy.io as io
-import PIL.Image as Image
+from PIL import Image as Image
 import numpy as np
 import os
 import glob
 from matplotlib import pyplot as plt
 from scipy.ndimage.filters import gaussian_filter
 import scipy
-from matplotlib import cm as CM
 import scipy.spatial
+from matplotlib import cm as c
 
 root = 'ShanghaiTech_Crowd_Counting_Dataset'
 
@@ -65,9 +65,8 @@ def get_count(img_path):
 
     gt_file = h5py.File(img_path.replace('.jpg','.h5').replace('images','ground_truth'),'r')
     groundtruth = np.asarray(gt_file['density'])
-    plt.imshow(groundtruth,cmap=CM.jet)
 
-    return np.sum(groundtruth)
+    return np.sum(groundtruth), groundtruth
 
 def generate_label(count):
     lower, upper = 50, 250
@@ -139,6 +138,27 @@ def label(path_sets):
         save_labels(set, labels)
 
 
+def calculate_and_save_heatmaps(img_paths):
+    for image in img_paths:
+        h5_file_name = image.replace('.jpg', '.h5').replace('images', 'heat_maps')
+        if os.path.isfile(h5_file_name):
+            print("Skipping: ", h5_file_name)
+            continue
+
+        count, groundtruth = get_count(image)
+
+        print(count)
+        hf = h5py.File(h5_file_name, 'w')
+        hf.create_dataset('groundtruth', data=groundtruth)
+        hf.close()
+
+
+def show_heat_map(img_path):
+    hf = h5py.File(img_path.replace('.jpg', '.h5').replace('images', 'heat_maps'), 'r')
+    heat = np.asarray(hf['groundtruth'])
+    plt.imshow(heat, cmap='cubehelix')
+    plt.show()
+
 def main():
 
     part_A_train = os.path.join(root,'part_A_final','train_data','images')
@@ -146,12 +166,16 @@ def main():
     part_B_train = os.path.join(root,'part_B_final','train_data','images')
     part_B_test = os.path.join(root,'part_B_final','test_data','images')
 
-    path_sets = [(part_A_train, 300), (part_A_test, 182)]
+    #path_sets = [(part_A_train, 300), (part_A_test, 182)]
     path_sets = [(part_B_train, 400), (part_B_test, 316)]
 
-    count(path_sets)
-    label(path_sets)
+    #count(path_sets)
+    #label(path_sets)
 
+    img_paths_train = get_paths(path_sets[0][0], 300)
+    img_paths_test = get_paths(path_sets[1][0], 316)
+    calculate_and_save_heatmaps(img_paths_train)
+    calculate_and_save_heatmaps(img_paths_test)
 
 if __name__ == '__main__':
     main()
