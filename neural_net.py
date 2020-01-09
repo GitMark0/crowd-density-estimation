@@ -40,6 +40,8 @@ def main():
     history = model.fit(X_train, y_train[0:path_sets[0][1]], epochs=10,
                     validation_data=(X_test, y_test[0:path_sets[1][1]]))
 
+    model.save_weights('weights/')
+
 
 if __name__ == '__main__':
     main()

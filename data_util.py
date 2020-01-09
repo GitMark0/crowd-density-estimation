@@ -50,23 +50,11 @@ def load_labels(set):
             res.append(int(c))
         return res
 
-def image_from_arr(arrays, gray = False):
+def image_from_arr(arrays, gray = False, norm = True):
 
-    image_arr = None
-    type = None
-
-    if gray :
-        type = 'L'
-        image_arr = arrays[0]*255
-    else :
-        type = 'RGB'
-        red_arr,green_arr,blue_arr = arrays[0]*255,arrays[1]*255,arrays[2]*255
-        image_arr = np.empty((red_arr.shape[0], red_arr.shape[1], 3))
-        for i in range(0, red_arr.shape[0]):
-            for j in range(0, red_arr.shape[1]):
-                image_arr[i,j] = \
-                    np.array([red_arr[i,j], green_arr[i,j], blue_arr[i,j]])
-    image = Image.fromarray(image_arr.astype('uint8'), type)
+    type = 'L' if gray else 'RGB'
+    arrays *= 255 if norm else 1
+    image = Image.fromarray(arrays.astype('uint8'), type)
 
     return image
 
@@ -84,6 +72,26 @@ def load_data(path, N):
     X = []
     for i in range(1, N+1):
         X.append(chw_hwc(load_image(path, i)))
-        print(X[-1].shape)
 
     return (np.array(X), np.array(load_labels(path)))
+
+def process_save(load_path, N, save_path):
+    for i in range(1, N+1):
+        img = load_image(load_path, i)
+        name = 'IMG_' +  str(i) + '.jpg'
+        image_from_arr(img).save(os.path.join(save_path, name))
+
+
+def main():
+    root = 'ShanghaiTech_Crowd_Counting_Dataset'
+    part_B_train = os.path.join(root,'part_B_final','train_data','images')
+    part_B_test = os.path.join(root,'part_B_final','test_data','images')
+    path_sets = [(part_B_train, 400), (part_B_test, 316)]
+
+    save_path = os.path.join(root,'part_B_final','train_data','processed')
+    process_save(path_sets[0][0], path_sets[0][1], save_path)
+    save_path = os.path.join(root,'part_B_final','test_data','processed')
+    process_save(path_sets[1][0], path_sets[1][1], save_path)
+
+if __name__ == '__main__':
+    main()
