@@ -2,14 +2,15 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 import data_util
 import os
+from keras_preprocessing.image import ImageDataGenerator
 
-root = 'ShanghaiTech_Crowd_Counting_Dataset'
+root = 'beijing'
 
 
 def init_model():
 
     model = models.Sequential()
-    model.add(layers.Conv2D(3, (5, 5), activation='relu', input_shape=(128, 170, 3)))
+    model.add(layers.Conv2D(3, (5, 5), activation='relu', input_shape=(64, 128, 3)))
     model.add(layers.Conv2D(9, (4, 4), activation='relu'))
     model.add(layers.MaxPooling2D((3, 3)))
     model.add(layers.Conv2D(27, (3, 3), activation='relu'))
@@ -28,25 +29,33 @@ def init_model():
 
 
 def main():
-    folder = 'processed'
-    part_B_train = os.path.join(root,'part_B_final','train_data',folder)
-    part_B_test = os.path.join(root,'part_B_final','test_data',folder)
-    path_sets = [(part_B_train, 400), (part_B_test, 316)]
 
-    X_train, y_train = data_util.load_data(path_sets[0][0], path_sets[0][1])
-    X_test, y_test = data_util.load_data(path_sets[1][0], path_sets[1][1])
+    input_size = (64, 128, 3)
+    batch_size = 4
+    image_gen = ImageDataGenerator(rescale=1 / 255,
+                               fill_mode='nearest')
 
+    train_image_gen = image_gen.flow_from_directory(
+    os.path.join(root, 'train'),
+    target_size=input_size[:2],
+    batch_size=batch_size,
+    class_mode='categorical')
+
+    test_image_gen = image_gen.flow_from_directory(
+        os.path.join(root, 'test'),
+        target_size=input_size[:2],
+        batch_size=batch_size,
+        class_mode='categorical')
+
+    print(train_image_gen.class_indices)
 
     model = init_model()
-
-    model.compile(optimizer='adadelta',
-              loss='sparse_categorical_crossentropy',
+    model.compile(optimizer='adam',
+              loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-    history = model.fit(X_train, y_train[0:path_sets[0][1]], epochs=50,
-                    validation_data=(X_test, y_test[0:path_sets[1][1]]))
-
-
+    results = model.fit_generator(train_image_gen, validation_data=test_image_gen,
+        verbose=1, epochs=10)
 
     model.save_weights('weights/')
 
