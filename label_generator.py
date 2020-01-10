@@ -70,7 +70,7 @@ def get_count(img_path):
     return np.sum(groundtruth)
 
 def generate_label(count):
-    lower, upper = 50, 250
+    lower, upper = 60, 160
     if count < lower:
         return 0
     elif count < upper:
@@ -121,7 +121,7 @@ def count(path_sets):
                     if current <= num_lines:
                         continue
                     c = get_count(path)
-                    print(c)
+                    print('C: ', c)
                     save_counts(set, c)
         except:
             # if there is no estimation for path set
@@ -135,7 +135,7 @@ def label(path_sets):
         labels = []
         for count in load_counts(set):
             labels.append(generate_label(count))
-        print(class_ratios(labels))
+        print('Labels: ', class_ratios(labels))
         save_labels(set, labels)
 
 
