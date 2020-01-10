@@ -37,9 +37,14 @@ def normalize(pix):
     return pix/255
 
 
-def load_image(path, index):
+def load_image(path, index, avg=False, norm=False):
     name = 'IMG_' +  str(index) + '.jpg'
-    return get_pixels(name, path)
+    return get_pixels(name, path, avg, norm)
+
+def one_hot_encode(label, K):
+    hot = np.zeros(K)
+    hot[label] = 1
+    return hot
 
 def load_labels(set):
     with open(os.path.join(set,'labels.txt'), 'r+') as file:
@@ -71,7 +76,7 @@ def load_data(path, N):
     load_labels(path)
     X = []
     for i in range(1, N+1):
-        X.append(chw_hwc(load_image(path, i)))
+        X.append(load_image(path, i, False, True))
 
     return (np.array(X), np.array(load_labels(path)))
 
