@@ -156,7 +156,8 @@ def calculate_and_save_heatmaps(img_paths):
 def show_heat_map(img_path):
     hf = h5py.File(img_path.replace('.jpg', '.h5').replace('images', 'heat_maps'), 'r')
     heat = np.asarray(hf['groundtruth'])
-    plt.imshow(heat, cmap='cubehelix')
+    plt.imshow(heat, cmap='hot', vmin=0, vmax=0.0002)
+    plt.colorbar()
     plt.show()
 
 def main():
@@ -170,16 +171,16 @@ def main():
     path_sets = [(part_B_train, 400), (part_B_test, 316)]
 
     #count(path_sets)
-<<<<<<< HEAD
     #label(path_sets)
-=======
-    label(path_sets)
->>>>>>> neural-net
 
-    img_paths_train = get_paths(path_sets[0][0], 300)
+    img_paths_train = get_paths(path_sets[0][0], 400)
     img_paths_test = get_paths(path_sets[1][0], 316)
-    calculate_and_save_heatmaps(img_paths_train)
-    calculate_and_save_heatmaps(img_paths_test)
+
+    #calculate_and_save_heatmaps(img_paths_train)
+    #calculate_and_save_heatmaps(img_paths_test)
+
+    show_heat_map(img_paths_train[131])
+
 
 if __name__ == '__main__':
     main()
