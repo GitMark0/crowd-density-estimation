@@ -55,7 +55,7 @@ def main():
               metrics=['accuracy'])
 
     results = model.fit_generator(train_image_gen, validation_data=test_image_gen,
-        verbose=1, epochs=10)
+        verbose=1, epochs=30)
 
     model.save_weights('weights/')
 
