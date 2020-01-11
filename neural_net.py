@@ -4,8 +4,6 @@ import tensorflow as tf
 from tensorflow.keras import  layers, models
 import data_util
 from tensorflow import expand_dims
-from matplotlib import pyplot as plt
-from PIL.Image import Image
 
 root = 'ShanghaiTech_Crowd_Counting_Dataset'
 
@@ -16,7 +14,7 @@ def init_model(input_layer, output_shape):
 
     model.add(layers.BatchNormalization())
     model.add(layers.Conv2D(2, (3, 3)))
-    model.add(layers.ReLU())
+    model.add(layers.LeakyReLU())
     model.add(layers.MaxPooling2D((2, 2)))
     model.add(layers.Conv2D(6, (2, 2)))
     model.add(layers.ReLU())
@@ -35,7 +33,6 @@ def init_model(input_layer, output_shape):
     model.add(layers.Conv2DTranspose(3, (3, 3)))
     model.add(layers.Conv2DTranspose(3, (1, 3)))
 
-    model.summary()
     return model
 
 def main():
@@ -55,20 +52,16 @@ def main():
     input_layer = layers.Input(input_shape)
 
     model = init_model(input_layer, output_shape)
+    model.summary()
 
-    model.compile(optimizer='adam',
+    model.compile(optimizer=tf.keras.optimizers.Nadam(learning_rate=0.0019),
                   loss=tf.keras.losses.MeanSquaredError(),
-                  metrics=['accuracy'])
+                  metrics=['accuracy'],
+                  sample_weight_mode='temporal')
 
-    history = model.fit(X_train, y_train[0:400], epochs=5, validation_data=(X_test, y_test[0:316]), verbose=1)
+    history = model.fit(X_train, y_train[0:400], epochs=50, validation_data=(X_test, y_test[0:316]), verbose=1)
 
-    #test_sample = tf.expand_dims(X_train[0], 0)
-    test_sample = X_train[0:2]
-    prediction = model.predict(test_sample)
-    image = data_util.image_from_arr(prediction, gray = False, norm = True)
-    image.show()
-
-    #model.save_weights('weights/')
+    model.save_weights('weights/')
 
 
 
