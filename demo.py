@@ -17,6 +17,10 @@ def main():
     loss,acc = model.evaluate(X_test,  y_test[0:10], verbose=2)
     print("Restored model, accuracy: {:5.2f}%".format(100*acc))
 
+    test_sample = X_test[0:2]
+    prediction = model.predict(test_sample)
+    image = data_util.image_from_arr(prediction, gray = False, norm = False)
+    image.show()
 
 if __name__ == '__main__':
     main()
