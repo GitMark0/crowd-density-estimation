@@ -80,9 +80,18 @@ def load_data(path, N):
 
     return (np.array(X), np.array(load_labels(path)))
 
+
+def load_data_without_labels(path, N):
+    X = []
+    for i in range(1, N + 1):
+        X.append(load_image(path, i, False, True))
+
+    return np.array(X)
+
+
 def process_save(load_path, N, save_path):
     for i in range(1, N+1):
-        img = chw_hwc(load_image(load_path, i))
+        img = chw_hwc(load_image(load_path, i, True, True))
         name = 'IMG_' +  str(i) + '.jpg'
         image_from_arr(img).save(os.path.join(save_path, name))
 

@@ -9,6 +9,7 @@ from scipy.ndimage.filters import gaussian_filter
 import scipy
 import scipy.spatial
 from matplotlib import cm as c
+import data_util
 
 root = 'ShanghaiTech_Crowd_Counting_Dataset'
 
@@ -160,6 +161,13 @@ def show_heat_map(img_path):
     plt.colorbar()
     plt.show()
 
+def convert_heat_maps_to_jpg(img_paths):
+    for img_path in img_paths:
+        hf = h5py.File(img_path.replace('.jpg', '.h5').replace('images', 'heat_maps'), 'r')
+        heat = np.asarray(hf['groundtruth'])
+        plt.imsave(fname=img_path.replace('images', 'heat_maps'), arr=heat, cmap='hot', vmin=0, vmax=0.0002)
+
+
 def main():
 
     part_A_train = os.path.join(root,'part_A_final','train_data','images')
@@ -176,11 +184,27 @@ def main():
     img_paths_train = get_paths(path_sets[0][0], 400)
     img_paths_test = get_paths(path_sets[1][0], 316)
 
-    #calculate_and_save_heatmaps(img_paths_train)
-    #calculate_and_save_heatmaps(img_paths_test)
+    ## calculating and saving heat_maps if none exist
+    calculate_and_save_heatmaps(img_paths_train)
+    calculate_and_save_heatmaps(img_paths_test)
 
-    show_heat_map(img_paths_train[131])
 
+    ## converting from .h5 to .jpg format
+    #convert_heat_maps_to_jpg(img_paths_train)
+    #convert_heat_maps_to_jpg(img_paths_test)
+
+
+    ## scaling converted heat maps to (170, 128, 3) shape
+    #save_path = os.path.join(root, 'part_B_final', 'train_data', 'processed_labels')
+    #data_util.process_save(os.path.join(root,'part_B_final','train_data','heat_maps'), 400, save_path)
+    #save_path = os.path.join(root, 'part_B_final', 'test_data', 'processed_labels')
+    #data_util.process_save(os.path.join(root,'part_B_final','test_data','heat_maps'), 316, save_path)
+
+
+    ## show image
+    img = plt.imread(img_paths_train[0].replace('images','processed_labels'))
+    plt.imshow(img)
+    plt.show()
 
 if __name__ == '__main__':
     main()
