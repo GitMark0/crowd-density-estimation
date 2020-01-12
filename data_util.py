@@ -1,7 +1,7 @@
 import PIL.Image as Image
 import numpy as np
 import os
-
+from matplotlib import pyplot as plt
 
 def get_pixels(image, avg=True, norm=True):
     pix = np.array(image)
@@ -84,7 +84,10 @@ def load_example(path, target_dim, norm=True):
     info, image = prepare_image(Image.open(os.path.join(path), 'r'), target_dim)
     return (info, get_pixels(image, False, norm))
 
-
+def show_prediction_as_image(image):
+    image = np.array(image_from_arr(image, gray=False, norm=True).convert('LA'))[:, :, 0]
+    plt.imshow(image, cmap='hot', vmin=21, vmax=120)
+    plt.show()
 
 def load_data(path, N):
     load_labels(path)

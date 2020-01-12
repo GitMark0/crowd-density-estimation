@@ -21,9 +21,7 @@ def main():
 
     images = []
     for img in ['IMG_1.jpg', 'IMG_2.jpg', 'IMG_3.jpg', 'IMG_4.jpg', 'IMG_5.jpg']:
-        image1 = image.load_img(os.path.join(demos, img), target_size=(128, 170, 3))
-        image1 = image.img_to_array(image1)
-        #image1 = np.expand_dims(image1, axis=0)
+        _, image1 = data_util.load_example(os.path.join(demos, img), input_shape)
         images.append(image1)
     images = np.array(images)
 
@@ -33,8 +31,9 @@ def main():
                   sample_weight_mode='temporal')
 
     test_samples = images[0:4]
-    prediction = model.predict(test_samples)
-    data_util.show_prediction_as_image(prediction[2])
+    predictions = model.predict(test_samples)
+    for prediction in predictions:
+        data_util.show_prediction_as_image(prediction)
 
 
 if __name__ == '__main__':
