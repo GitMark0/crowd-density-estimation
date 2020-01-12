@@ -3,8 +3,9 @@ from tensorflow.keras import datasets, layers, models
 import data_util
 import os
 from keras_preprocessing.image import ImageDataGenerator
+from tensorflow.keras.callbacks import Callback, ModelCheckpoint
 
-root = 'beijing'
+root = 'beijing2'
 
 
 def init_model():
@@ -54,10 +55,12 @@ def main():
               loss='categorical_crossentropy',
               metrics=['accuracy'])
 
-    results = model.fit_generator(train_image_gen, validation_data=test_image_gen,
-        verbose=1, epochs=30)
+    callbacks = [ModelCheckpoint('weights/cp.ckpt', monitor='val_acc', save_best_only=True)]
 
-    model.save_weights('weights/')
+    results = model.fit_generator(train_image_gen, validation_data=test_image_gen,
+        callbacks=callbacks, verbose=1, epochs=15)
+
+    #model.save_weights('weights/')
 
 
 if __name__ == '__main__':
