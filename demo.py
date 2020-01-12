@@ -4,11 +4,15 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 import data_util
 import neural_net
+import numpy as np
 
-root = 'ShanghaiTech_Crowd_Counting_Dataset'
-folder = 'processed'
-
+root = 'beijing'
+examples = [('1', '2-20170506192614.jpg'), ('1', '2-20170506194615.jpg'),
+    ('2', '1-20170419095422.jpg'), ('2', '1-20170506103732.jpg'),
+    ('3', '1-20170419094030.jpg'), ('3', '1-20170419094437.jpg')]
 def main():
+
+    example = examples[2]
 
     input_shape = (128, 170, 3)
     output_shape = (128, 170, 1)
@@ -18,13 +22,8 @@ def main():
     model = neural_net.init_model(input_layer, output_shape)
     model.load_weights('weights/')
     folder = 'processed'
-    part_B_train = os.path.join(root, 'part_B_final', 'train_data', folder)
-    part_B_test = os.path.join(root, 'part_B_final', 'test_data', folder)
+    path = os.path.join(root, 'test')
 
-    X_train = data_util.load_data_without_labels(part_B_train, 400)
-    y_train = data_util.load_data_without_labels(part_B_train.replace('processed', 'processed_labels'), 400)
-    X_test = data_util.load_data_without_labels(part_B_test, 316)
-    y_test = data_util.load_data_without_labels(part_B_test.replace('processed', 'processed_labels'), 316)
 
     model.compile(optimizer='adadelta',
                   loss=tf.keras.losses.MeanSquaredError(),
@@ -34,11 +33,14 @@ def main():
     #loss,acc = model.evaluate(X_test,  y_test[0:316], verbose=2)
     #print("Restored model, accuracy: {:5.2f}%".format(100*acc))
 
-    test_sample = X_test[0:10]
-    prediction = model.predict(test_sample)
+    (original_dim, rotated), X = data_util.load_example(os.path.join(path, example[0], example[1]), input_shape)
+    prediction = model.predict(np.expand_dims(X, axis=0))
     #print(prediction[1])
-    image = data_util.image_from_arr(prediction[5], gray = False, norm = True)
-    image.show()
+    image = data_util.image_from_arr(prediction[0], gray = False, norm = True)
+    if rotated:
+        image.rotate(270)
+    image.resize(original_dim).show()
+
 
 if __name__ == '__main__':
     main()

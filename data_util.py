@@ -3,8 +3,8 @@ import numpy as np
 import os
 
 
-def get_pixels(name, path, avg=True, norm=True):
-    pix = np.array(Image.open(os.path.join(path, name), 'r'))
+def get_pixels(image, avg=True, norm=True):
+    pix = np.array(image)
     if avg:
         pix = avg_pool(pix)
     if norm:
@@ -71,6 +71,20 @@ def chw_hwc(arrays):
             image_arr[i,j] = \
                 np.array([red_arr[i,j], green_arr[i,j], blue_arr[i,j]])
     return image_arr
+
+def prepare_image(image, target_dim):
+    image_horiz = image.size[0] > image.size[1]
+    target_horiz = target_dim[0] > target_dim[1]
+    rotate = image_horiz != target_horiz
+    if rotate:
+        image.rotate(90)
+    return ((image.size, rotate), image.resize((target_dim[1], target_dim[0])))
+
+def load_example(path, target_dim, norm=True):
+    info, image = prepare_image(Image.open(os.path.join(path), 'r'), target_dim)
+    return (info, get_pixels(image, False, norm))
+
+
 
 def load_data(path, N):
     load_labels(path)
