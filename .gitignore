@@ -1,4 +1,5 @@
 *.pyc
 beijing
 ShanghaiTech_Crowd_Counting_Dataset
+test_examples
 __pycache__
