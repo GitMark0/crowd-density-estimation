@@ -101,7 +101,7 @@ def show_prediction_as_image(image, size, rotate):
     image = np.array(image)[:, :, 0]
 
     plt.imshow(image, cmap='hot', vmin=21, vmax=120)
-    plt.show()
+    #plt.show()
 
 
 def load_data(path, N):

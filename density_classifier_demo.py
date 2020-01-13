@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow.keras import datasets, layers, models
 import data_util
 import os
-import neural_net
+import density_classifier_neural_net as neural_net
 from keras_preprocessing.image import ImageDataGenerator
 import numpy as np
 
