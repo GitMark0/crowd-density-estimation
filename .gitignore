@@ -1,6 +1,9 @@
 *.pyc
 ShanghaiTech_Crowd_Counting_Dataset
+<<<<<<< HEAD
 beijing
+=======
+>>>>>>> 8592678... Change gitignore to upload test example images
 __pycache__
 .idea/
 do_not_push.py
