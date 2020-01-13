@@ -3,6 +3,7 @@ import numpy as np
 import os
 from matplotlib import pyplot as plt
 
+
 def get_pixels(image, avg=True, norm=True):
     pix = np.array(image)
     if avg:
@@ -10,6 +11,7 @@ def get_pixels(image, avg=True, norm=True):
     if norm:
         pix = normalize(pix)
     return pix
+
 
 def avg_pool(pix, cluster=6, stride=6):
     input_shape = pix.shape
@@ -33,18 +35,20 @@ def avg_pool(pix, cluster=6, stride=6):
 
     return np.array(output)
 
+
 def normalize(pix):
     return pix/255
 
 
-def load_image(path, index, avg=False, norm=False):
-    name = 'IMG_' +  str(index) + '.jpg'
-    return get_pixels(name, path, avg, norm)
+def load_image(image, avg=False, norm=False):
+    return get_pixels(image, avg, norm)
+
 
 def one_hot_encode(label, K):
     hot = np.zeros(K)
     hot[label] = 1
     return hot
+
 
 def load_labels(set):
     with open(os.path.join(set,'labels.txt'), 'r+') as file:
@@ -55,6 +59,7 @@ def load_labels(set):
             res.append(int(c))
         return res
 
+
 def image_from_arr(arrays, gray = False, norm = True):
 
     type = 'L' if gray else 'RGB'
@@ -62,6 +67,7 @@ def image_from_arr(arrays, gray = False, norm = True):
     image = Image.fromarray(arrays.astype('uint8'), type)
 
     return image
+
 
 def chw_hwc(arrays):
     red_arr,green_arr,blue_arr = arrays[0],arrays[1],arrays[2]
@@ -72,6 +78,7 @@ def chw_hwc(arrays):
                 np.array([red_arr[i,j], green_arr[i,j], blue_arr[i,j]])
     return image_arr
 
+
 def prepare_image(image, target_dim):
     image_horiz = image.size[0] > image.size[1]
     target_horiz = target_dim[0] > target_dim[1]
@@ -80,35 +87,46 @@ def prepare_image(image, target_dim):
         image.rotate(90)
     return ((image.size, rotate), image.resize((target_dim[1], target_dim[0])))
 
+
 def load_example(path, target_dim, norm=True):
     info, image = prepare_image(Image.open(os.path.join(path), 'r'), target_dim)
     return (info, get_pixels(image, False, norm))
 
-def show_prediction_as_image(image):
-    image = np.array(image_from_arr(image, gray=False, norm=True).convert('LA'))[:, :, 0]
+
+def show_prediction_as_image(image, size, rotate):
+    image = image_from_arr(image, gray=False, norm=True).convert('LA')
+    if rotate:
+        image.rotate(270)
+    image.resize(size)
+    image = np.array(image)[:, :, 0]
+
     plt.imshow(image, cmap='hot', vmin=21, vmax=120)
     plt.show()
 
+
 def load_data(path, N):
-    load_labels(path)
+    labels = load_labels(path)
     X = []
     for i in range(1, N+1):
-        X.append(load_image(path, i, False, True))
+        image = os.path.join(path, 'IMG_' + str(i) + ".jpg")
+        X.append(load_image(image, False, True))
 
-    return (np.array(X), np.array(load_labels(path)))
+    return (np.array(X), np.array(labels))
 
 
 def load_data_without_labels(path, N):
     X = []
     for i in range(1, N + 1):
-        X.append(load_image(path, i, False, True))
+        image = os.path.join(path, 'IMG_' + str(i) + ".jpg")
+        X.append(load_image(image, False, True))
 
     return np.array(X)
 
 
 def process_save(load_path, N, save_path):
     for i in range(1, N+1):
-        img = chw_hwc(load_image(load_path, i, True, True))
+        image = os.path.join(load_path, 'IMG_' + str(i) + ".jpg")
+        img = chw_hwc(load_image(image, True, True))
         name = 'IMG_' +  str(i) + '.jpg'
         image_from_arr(img).save(os.path.join(save_path, name))
 
@@ -123,6 +141,7 @@ def main():
     process_save(path_sets[0][0], path_sets[0][1], save_path)
     save_path = os.path.join(root,'part_B_final','test_data','processed')
     process_save(path_sets[1][0], path_sets[1][1], save_path)
+
 
 if __name__ == '__main__':
     main()

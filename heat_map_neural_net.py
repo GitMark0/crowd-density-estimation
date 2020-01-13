@@ -7,7 +7,7 @@ import data_util
 root = 'ShanghaiTech_Crowd_Counting_Dataset'
 
 
-def init_model(input_layer, output_shape):
+def init_model(input_layer):
     model = models.Sequential()
     model.add(input_layer)
 
@@ -46,11 +46,9 @@ def main():
     y_test = data_util.load_data_without_labels(part_B_test.replace('processed', 'processed_labels'), 316)
 
     input_shape = (128, 170, 3)
-    output_shape = (128, 170, 1)
 
     input_layer = layers.Input(input_shape)
-
-    model = init_model(input_layer, output_shape)
+    model = init_model(input_layer)
     model.summary()
 
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0012),
@@ -60,7 +58,7 @@ def main():
 
     model.fit(X_train, y_train[0:400], epochs=30, validation_data=(X_test, y_test[0:316]), verbose=1)
 
-    model.save_weights('weights/')
+    model.save_weights(os.path.join('weights', 'heat_map'))
 
 
 if __name__ == '__main__':
