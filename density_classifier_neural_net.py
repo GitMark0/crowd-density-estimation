@@ -24,7 +24,6 @@ def init_model():
     model.add(layers.Dense(32, activation='relu'))
     model.add(layers.Dense(3, activation='softmax'))
 
-    model.summary()
     return model
 
 

@@ -44,12 +44,6 @@ def load_image(image, avg=False, norm=False):
     return get_pixels(image, avg, norm)
 
 
-def one_hot_encode(label, K):
-    hot = np.zeros(K)
-    hot[label] = 1
-    return hot
-
-
 def load_labels(set):
     with open(os.path.join(set,'labels.txt'), 'r+') as file:
         res = []
@@ -94,6 +88,7 @@ def load_example(path, target_dim, norm=True):
 
 
 def show_prediction_as_image(image, size, rotate):
+    plt.figure(figsize=(12,12))
     image = image_from_arr(image, gray=False, norm=True).convert('LA')
     if rotate:
         image.rotate(270)
@@ -121,27 +116,3 @@ def load_data_without_labels(path, N):
         X.append(load_image(image, False, True))
 
     return np.array(X)
-
-
-def process_save(load_path, N, save_path):
-    for i in range(1, N+1):
-        image = os.path.join(load_path, 'IMG_' + str(i) + ".jpg")
-        img = chw_hwc(load_image(image, True, True))
-        name = 'IMG_' +  str(i) + '.jpg'
-        image_from_arr(img).save(os.path.join(save_path, name))
-
-
-def main():
-    root = 'ShanghaiTech_Crowd_Counting_Dataset'
-    part_B_train = os.path.join(root,'part_B_final','train_data','images')
-    part_B_test = os.path.join(root,'part_B_final','test_data','images')
-    path_sets = [(part_B_train, 400), (part_B_test, 316)]
-
-    save_path = os.path.join(root,'part_B_final','train_data','processed')
-    process_save(path_sets[0][0], path_sets[0][1], save_path)
-    save_path = os.path.join(root,'part_B_final','test_data','processed')
-    process_save(path_sets[1][0], path_sets[1][1], save_path)
-
-
-if __name__ == '__main__':
-    main()
