@@ -69,7 +69,7 @@ if __name__ == '__main__':
     data_util.show_prediction_as_image(heat_map, size, rotate)
 
     #predict density class
-    probability = np.round(classifier_model.predict(np.expand_dims(density_image, axis=0))[0], 3)
+    probability = np.round(classifier_model.predict(np.expand_dims(density_image, axis=0))[0], 3)*100
     classification = np.argmax(probability)
     interpretation = class_interpretations[classification]
 
