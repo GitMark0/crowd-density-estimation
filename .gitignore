@@ -1,0 +1,6 @@
+*.pyc
+ShanghaiTech_Crowd_Counting_Dataset
+beijing
+__pycache__
+.idea/
+do_not_push.py
