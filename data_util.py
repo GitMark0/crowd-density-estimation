@@ -74,12 +74,13 @@ def chw_hwc(arrays):
 
 
 def prepare_image(image, target_dim):
+    original_size = image.size
     image_horiz = image.size[0] > image.size[1]
     target_horiz = target_dim[0] > target_dim[1]
     rotate = image_horiz != target_horiz
     if rotate:
-        image.rotate(90)
-    return ((image.size, rotate), image.resize((target_dim[1], target_dim[0])))
+        image = image.rotate(90)
+    return ((original_size, rotate), image.resize((target_dim[1], target_dim[0])))
 
 
 def load_example(path, target_dim, norm=True):
@@ -91,12 +92,11 @@ def show_prediction_as_image(image, size, rotate):
     plt.figure(figsize=(12,12))
     image = image_from_arr(image, gray=False, norm=True).convert('LA')
     if rotate:
-        image.rotate(270)
-    image.resize(size)
+        image = image.rotate(270)
+    image = image.resize(size)
     image = np.array(image)[:, :, 0]
 
     plt.imshow(image, cmap='hot', vmin=21, vmax=120)
-    #plt.show()
 
 
 def load_data(path, N):
