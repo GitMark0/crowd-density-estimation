@@ -29,11 +29,11 @@ def test_random_examples(model, example_index):
     root = 'test_examples'
     examples = ['82063735_2863425327047082_1096112625017683968_n.jpg',
         '82802453_642298606511069_9138862684085682176_n.jpg',
-        '82428967_753940481794855_6610497251762503680_n.jpg']
+        '82428967_753940481794855_6610497251762503680_n.jpg', 'IMG_0.jpg', 'IMG_1.jpg',
+        'IMG_2.jpg','IMG_3.jpg','IMG_4.jpg', 'IMG_5.jpg']
 
     _, X = data_util.load_example(os.path.join(root, examples[example_index]), input_size)
     print('Prediction: ', model.predict(np.expand_dims(X, axis=0)))
-    print(np.sum(model.predict(np.expand_dims(X, axis=0))))
 
 
 def main():
@@ -45,7 +45,7 @@ def main():
               metrics=['accuracy'])
 
     #test_dataset_examples(model)
-    test_random_examples(model, 2)
+    test_random_examples(model, 8)
 
 
 if __name__ == '__main__':
